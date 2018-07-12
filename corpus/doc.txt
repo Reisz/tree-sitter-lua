@@ -1,0 +1,430 @@
+==========
+Coroutines
+==========
+function foo (a)
+	print("foo", a)
+	return coroutine.yield(2*a)
+end
+
+co = coroutine.create(function (a,b)
+	print("co-body", a, b)
+	local r = foo(a+1)
+	print("co-body", r)
+	local r, s = coroutine.yield(a+b, a-b)
+	print("co-body", r, s)
+	return b, "end"
+end)
+
+print("main", coroutine.resume(co, 1, 10))
+print("main", coroutine.resume(co, "r"))
+print("main", coroutine.resume(co, "x", "y"))
+print("main", coroutine.resume(co, "x", "y"))
+
+---
+(chunk
+	(function_definition (function_identifier (identifier)) (identifier_list (identifier))
+		(function_call (variable (identifier)) (expression_list (string_literal) (variable (identifier))))
+		(return_statement (expression_list (function_call (variable (variable (identifier)) (identifier)) (expression_list (binary_expression (number_literal) (variable (identifier)))))))
+	)
+	(global_assignment
+		(variable_list (variable (identifier)))
+		(expression_list (function_call (variable (variable (identifier)) (identifier)) (expression_list
+			(function_literal (identifier_list (identifier) (identifier))
+				(function_call (variable (identifier)) (expression_list (string_literal) (variable (identifier)) (variable (identifier))))
+				(local_assignment (identifier_list (identifier)) (expression_list (function_call (variable (identifier)) (expression_list (binary_expression (variable (identifier)) (number_literal))))))
+				(function_call (variable (identifier)) (expression_list (string_literal) (variable (identifier))))
+				(local_assignment (identifier_list (identifier) (identifier)) (expression_list
+					(function_call (variable (variable (identifier)) (identifier)) (expression_list
+						(binary_expression (variable (identifier)) (variable (identifier)))
+						(binary_expression (variable (identifier)) (variable (identifier)))
+					))
+				))
+				(function_call (variable (identifier)) (expression_list (string_literal) (variable (identifier)) (variable (identifier))))
+				(return_statement (expression_list (variable (identifier)) (string_literal)))
+			)
+		)))
+	)
+	(function_call (variable (identifier)) (expression_list (string_literal) (function_call (variable (variable (identifier)) (identifier)) (expression_list
+		(variable (identifier) ) (number_literal) (number_literal)
+	))))
+	(function_call (variable (identifier)) (expression_list (string_literal) (function_call (variable (variable (identifier)) (identifier)) (expression_list
+		(variable (identifier) ) (string_literal)
+	))))
+	(function_call (variable (identifier)) (expression_list (string_literal) (function_call (variable (variable (identifier)) (identifier)) (expression_list
+		(variable (identifier) ) (string_literal) (string_literal)
+	))))
+	(function_call (variable (identifier)) (expression_list (string_literal) (function_call (variable (variable (identifier)) (identifier)) (expression_list
+		(variable (identifier) ) (string_literal) (string_literal)
+	))))
+)
+
+=======
+Strings
+=======
+a = 'alo\n123"'
+a = "alo\n123\""
+a = '\97lo\10\04923"'
+a = [[alo
+123"]]
+a = [==[
+alo
+123"]==]
+---
+(chunk
+	(global_assignment (variable_list (variable (identifier))) (expression_list (string_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (string_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (string_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (string_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (string_literal)))
+)
+
+========
+Numerals
+========
+a = 3
+a = 345
+a = 0xff
+a = 0xBEBADA
+
+a = 3.0
+a = 3.1416
+a = 314.16e-2
+a = 0.31416E1
+a = 34e1
+a = 0x0.1E
+a = 0xA23p-4
+a = 0X1.921FB54442D18P+1
+---
+(chunk
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+)
+
+==========
+Statements
+==========
+a = b + c
+(print or io.write)('done')
+
+a = b + c(print or io.write)('done')
+a = b + c; (print or io.write)('done')
+---
+(chunk
+	(global_assignment (variable_list (variable (identifier))) (expression_list (binary_expression
+		(variable (identifier))
+		(function_call (function_call (variable (identifier)) (expression_list (binary_expression
+			(variable (identifier))
+			(variable (variable (identifier)) (identifier))
+		))) (expression_list (string_literal)))
+	)))
+
+	(global_assignment (variable_list (variable (identifier))) (expression_list (binary_expression
+		(variable (identifier))
+		(function_call (function_call (variable (identifier)) (expression_list (binary_expression
+			(variable (identifier))
+			(variable (variable (identifier)) (identifier))
+		))) (expression_list (string_literal)))
+	)))
+
+	(global_assignment (variable_list (variable (identifier))) (expression_list (binary_expression (variable (identifier)) (variable (identifier)))))
+	(function_call (binary_expression
+			(variable (identifier))
+			(variable (variable (identifier)) (identifier))
+	) (expression_list (string_literal)))
+)
+
+===========
+Assignments
+===========
+i = 3
+i, a[i] = i+1, 20
+
+x, y = y, x
+x, y, z = y, z, x
+---
+(chunk
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal)))
+	(global_assignment (variable_list (variable (identifier)) (variable (variable (identifier)) (variable (identifier)))) (expression_list
+		(binary_expression (variable (identifier)) (number_literal)) (number_literal)
+	))
+	(global_assignment (variable_list (variable (identifier)) (variable (identifier))) (expression_list (variable (identifier)) (variable (identifier))))
+	(global_assignment (variable_list (variable (identifier)) (variable (identifier)) (variable (identifier))) (expression_list (variable (identifier)) (variable (identifier)) (variable (identifier))))
+)
+
+=======================
+Numerical For Statement
+=======================
+do
+	local var, limit, step = tonumber(e1), tonumber(e2), tonumber(e3)
+	if not (var and limit and step) then error() end
+	var = var - step
+	while true do
+		var = var + step
+		if (step >= 0 and var > limit) or (step < 0 and var < limit) then
+			break
+		end
+		local v = var
+		;
+	end
+end
+---
+(chunk (do_statement
+	(local_assignment (identifier_list (identifier) (identifier) (identifier)) (expression_list
+		(function_call (variable (identifier)) (expression_list (variable (identifier))))
+		(function_call (variable (identifier)) (expression_list (variable (identifier))))
+		(function_call (variable (identifier)) (expression_list (variable (identifier))))
+	))
+	(if_statement (unary_expression (binary_expression (binary_expression (variable (identifier)) (variable (identifier))) (variable (identifier))))
+		(function_call (variable (identifier)))
+	)
+	(global_assignment (variable_list (variable (identifier))) (expression_list (binary_expression (variable (identifier)) (variable (identifier)))))
+	(while_statement (true)
+		(global_assignment (variable_list (variable (identifier))) (expression_list (binary_expression (variable (identifier)) (variable (identifier)))))
+		(if_statement (binary_expression
+			(binary_expression
+				(binary_expression (variable (identifier)) (number_literal))
+				(binary_expression (variable (identifier)) (variable (identifier)))
+			)
+			(binary_expression
+				(binary_expression (variable (identifier)) (number_literal))
+				(binary_expression (variable (identifier)) (variable (identifier)))
+			)
+		)
+			(break)
+		)
+		(local_assignment (identifier_list (identifier)) (expression_list (variable (identifier))))
+	)
+))
+
+=====================
+Generic For Statement
+=====================
+do
+	local f, s, var = explist
+	while true do
+		local var_1, var_n = f(s, var)
+		if var_1 == nil then break end
+		var = var_1
+		;
+	end
+end
+---
+(chunk (do_statement
+	(local_assignment (identifier_list (identifier) (identifier) (identifier)) (expression_list (variable (identifier))))
+	(while_statement (true)
+		(local_assignment (identifier_list (identifier) (identifier)) (expression_list (function_call
+			(variable (identifier)) (expression_list (variable (identifier)) (variable (identifier)))
+		)))
+		(if_statement (binary_expression (variable (identifier)) (nil)) (break))
+		(global_assignment (variable_list (variable (identifier))) (expression_list (variable (identifier))))
+	)
+))
+
+===========
+Expressions
+===========
+f()                       -- adjusted to 0 results
+g(f(), x)                 -- f() is adjusted to 1 result
+g(x, f())                 -- g gets x plus all results from f()
+a,b,c = f(), x            -- f() is adjusted to 1 result (c gets nil)
+a,b = ...                 -- a gets the first vararg parameter, b gets
+													-- the second (both a and b can get nil if there
+													-- is no corresponding vararg parameter)
+
+a,b,c = x, f()             -- f() is adjusted to 2 results
+a,b,c = f()                -- f() is adjusted to 3 results
+do return f() end          -- returns all results from f()
+do return ... end          -- returns all received vararg parameters
+do return x,y,f() end      -- returns x, y, and all results from f()
+a = {f()}                  -- creates a list with all results from f()
+a = {...}                  -- creates a list with all vararg parameters
+a = {f(), nil}             -- f() is adjusted to 1 result
+---
+(chunk
+	(function_call (variable (identifier))) (comment)
+	(function_call (variable (identifier)) (expression_list (function_call (variable (identifier))) (variable (identifier)))) (comment)
+	(function_call (variable (identifier)) (expression_list (variable (identifier)) (function_call (variable (identifier))))) (comment)
+	(global_assignment (variable_list (variable (identifier)) (variable (identifier)) (variable (identifier))) (expression_list (function_call (variable (identifier))) (variable (identifier)))) (comment)
+	(global_assignment (variable_list (variable (identifier)) (variable (identifier)) ) (expression_list (vararg))) (comment)
+  (comment) (comment)
+
+	(global_assignment (variable_list (variable (identifier)) (variable (identifier)) (variable (identifier))) (expression_list (variable (identifier)) (function_call (variable (identifier))))) (comment)
+	(global_assignment (variable_list (variable (identifier)) (variable (identifier)) (variable (identifier))) (expression_list (function_call (variable (identifier))))) (comment)
+	(do_statement (return_statement (expression_list (function_call (variable (identifier)))))) (comment)
+	(do_statement (return_statement (expression_list (vararg)))) (comment)
+	(do_statement (return_statement (expression_list (variable (identifier)) (variable (identifier)) (function_call (variable (identifier)))))) (comment)
+	(global_assignment (variable_list (variable (identifier))) (expression_list (table_constructor (field (function_call (variable (identifier))))))) (comment)
+	(global_assignment (variable_list (variable (identifier))) (expression_list (table_constructor (field (vararg))))) (comment)
+	(global_assignment (variable_list (variable (identifier))) (expression_list (table_constructor (field (function_call (variable (identifier)))) (field (nil))))) (comment)
+)
+
+==================
+Table Constructors
+==================
+a = { [f(1)] = g; "x", "y"; x = 1, f(x), [30] = 23; 45 }
+do
+	local t = {}
+	t[f(1)] = g
+	t[1] = "x"         -- 1st exp
+	t[2] = "y"         -- 2nd exp
+	t.x = 1            -- t["x"] = 1
+	t[3] = f(x)        -- 3rd exp
+	t[30] = 23
+	t[4] = 45          -- 4th exp
+	a = t
+end
+---
+(chunk
+	(global_assignment (variable_list (variable (identifier))) (expression_list (table_constructor
+		(field (function_call (variable (identifier)) (expression_list (number_literal))) (variable (identifier)))
+		(field (string_literal))
+		(field (string_literal))
+		(field (identifier) (number_literal))
+		(field (function_call (variable (identifier)) (expression_list (variable (identifier)))))
+		(field (number_literal) (number_literal))
+		(field (number_literal))
+	)))
+	(do_statement
+		(local_assignment (identifier_list (identifier)) (expression_list (table_constructor)))
+		(global_assignment (variable_list (variable (variable (identifier)) (function_call (variable (identifier)) (expression_list (number_literal))))) (expression_list (variable (identifier))))
+		(global_assignment (variable_list (variable (variable (identifier)) (number_literal))) (expression_list (string_literal))) (comment)
+		(global_assignment (variable_list (variable (variable (identifier)) (number_literal))) (expression_list (string_literal))) (comment)
+		(global_assignment (variable_list (variable (variable (identifier)) (identifier))) (expression_list (number_literal))) (comment)
+		(global_assignment (variable_list (variable (variable (identifier)) (number_literal))) (expression_list (function_call (variable (identifier)) (expression_list (variable (identifier)))))) (comment)
+		(global_assignment (variable_list (variable (variable (identifier)) (number_literal))) (expression_list (number_literal)))
+		(global_assignment (variable_list (variable (variable (identifier)) (number_literal))) (expression_list (number_literal))) (comment)
+		(global_assignment (variable_list (variable (identifier))) (expression_list (variable (identifier))))
+	)
+)
+
+==============
+Function Calls
+==============
+do return (f(x)) end        -- results adjusted to 1
+do return 2 * f(x) end
+do return x, f(x) end       -- additional results
+do f(x); return end         -- results discarded
+do return x or f(x) end     -- results adjusted to 1
+---
+(chunk
+	(do_statement (return_statement (expression_list (function_call (variable (identifier)) (expression_list (variable (identifier))))))) (comment)
+	(do_statement (return_statement (expression_list (binary_expression (number_literal) (function_call (variable (identifier)) (expression_list (variable (identifier))))))))
+	(do_statement (return_statement (expression_list (variable (identifier)) (function_call (variable (identifier)) (expression_list (variable (identifier))))))) (comment)
+	(do_statement (function_call (variable (identifier)) (expression_list (variable (identifier)))) (return_statement)) (comment)
+	(do_statement (return_statement (expression_list (binary_expression (variable (identifier)) (function_call (variable (identifier)) (expression_list (variable (identifier)))))))) (comment)
+)
+
+====================
+Function Definitions
+====================
+function f () end
+f = function () end
+function t.a.b.c.f () end
+t.a.b.c.f = function () end
+local function f () end
+local f; f = function () end
+local f = function () end
+
+function f(a, b) end
+function g(a, b, ...) end
+function r() return 1,2,3 end
+
+function t.a.b.c:f (params) end
+t.a.b.c.f = function (self, params) end
+---
+(chunk
+	(function_definition (function_identifier (identifier)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (function_literal)))
+	(function_definition (function_identifier (identifier) (identifier) (identifier) (identifier) (identifier)))
+	(global_assignment (variable_list (variable
+		(variable
+			(variable
+				(variable (variable (identifier)) (identifier))
+			  (identifier)
+			)
+			(identifier)
+		)
+		(identifier)
+	)) (expression_list (function_literal)))
+	(function_definition (identifier))
+	(local_assignment (identifier_list (identifier)))
+	(global_assignment (variable_list (variable (identifier))) (expression_list (function_literal)))
+	(local_assignment (identifier_list (identifier)) (expression_list (function_literal)))
+
+	(function_definition (function_identifier (identifier)) (identifier_list (identifier) (identifier)))
+	(function_definition (function_identifier (identifier)) (identifier_list (identifier) (identifier)) (vararg))
+	(function_definition (function_identifier (identifier))
+		(return_statement (expression_list (number_literal) (number_literal) (number_literal)))
+	)
+
+	(function_definition (function_identifier (identifier) (identifier) (identifier) (identifier) (identifier)) (identifier_list (identifier)))
+	(global_assignment (variable_list (variable
+		(variable
+			(variable
+				(variable (variable (identifier)) (identifier))
+			  (identifier)
+			)
+			(identifier)
+		)
+		(identifier)
+	)) (expression_list (function_literal (identifier_list (identifier) (identifier)))))
+)
+
+================
+Visibility Rules
+================
+x = 10                -- global variable
+do                    -- new block
+	local x = x         -- new 'x', with value 10
+	print(x)            --> 10
+	x = x+1
+	do                  -- another block
+		local x = x+1     -- another 'x'
+		print(x)          --> 12
+	end
+	print(x)            --> 11
+end
+print(x)              --> 10  (the global one)
+
+a = {}
+local x = 20
+for i=1,10 do
+	local y = 0
+	a[i] = function () y=y+1; return x+y end
+end
+---
+(chunk
+	(global_assignment (variable_list (variable (identifier))) (expression_list (number_literal))) (comment)
+	(do_statement (comment)
+		(local_assignment (identifier_list (identifier)) (expression_list (variable (identifier)))) (comment)
+		(function_call (variable (identifier)) (expression_list (variable (identifier)))) (comment)
+		(global_assignment (variable_list (variable (identifier))) (expression_list (binary_expression (variable (identifier)) (number_literal))))
+		(do_statement (comment)
+			(local_assignment (identifier_list (identifier)) (expression_list (binary_expression (variable (identifier)) (number_literal)))) (comment)
+			(function_call (variable (identifier)) (expression_list (variable (identifier)))) (comment)
+		)
+		(function_call (variable (identifier)) (expression_list (variable (identifier)))) (comment)
+	)
+	(function_call (variable (identifier)) (expression_list (variable (identifier)))) (comment)
+
+	(global_assignment (variable_list (variable (identifier))) (expression_list (table_constructor)))
+	(local_assignment (identifier_list (identifier)) (expression_list (number_literal)))
+	(numerical_for_statement (identifier) (number_literal) (number_literal)
+		(local_assignment (identifier_list (identifier)) (expression_list (number_literal)))
+		(global_assignment (variable_list (variable (variable (identifier)) (variable (identifier)))) (expression_list (function_literal
+			(global_assignment (variable_list (variable (identifier))) (expression_list (binary_expression (variable (identifier)) (number_literal))))
+			(return_statement (expression_list (binary_expression (variable (identifier)) (variable (identifier)))))
+		)))
+	)
+)

@@ -1,0 +1,132 @@
+========================
+Mathematical Expressions
+========================
+local a = -1 + 2 * 3^4 / 5 // 6 -- (-1) + (((2 * (3^4)) / 5) // 6)
+local a = ((-1 + 2) * 3)^(4 / 5) // 6
+local a = 5 + 6 % 20 - 30 -- (5 + (6 % 20)) - 30
+---
+(chunk
+	(local_assignment (identifier_list (identifier)) (expression_list (binary_expression
+		(unary_expression (number_literal))
+		(binary_expression
+			(binary_expression
+				(binary_expression
+					(number_literal)
+					(binary_expression (number_literal) (number_literal))
+				)
+				(number_literal)
+			)
+			(number_literal)
+		)
+	))) (comment)
+	(local_assignment (identifier_list (identifier)) (expression_list (binary_expression
+		(binary_expression
+			(binary_expression
+				(binary_expression (unary_expression (number_literal)) (number_literal))
+				(number_literal)
+			)
+			(binary_expression (number_literal) (number_literal))
+		)
+		(number_literal)
+	)))
+	(local_assignment (identifier_list (identifier)) (expression_list (binary_expression
+		(binary_expression
+			(number_literal)
+			(binary_expression (number_literal) (number_literal))
+		)
+		(number_literal)
+	))) (comment)
+)
+
+===================
+Bitwise Expressions
+===================
+local a = 0xf | 0x2 & ~0x3 << 1 -- 0xf | (0x2 & ((~0x3) << 1))
+local a = 0x1 | ~0x2 | 0x3 >> 1 -- (0x1 | (~0x2)) | (0x3 >> 1)
+local a = 0xff ~ ~0 & 0xCC ~ ~1 -- (0xff ~ ((~0) & 0xCC)) ~ (~1)
+---
+(chunk
+	(local_assignment (identifier_list (identifier)) (expression_list (binary_expression
+		(number_literal)
+		(binary_expression
+			(number_literal)
+			(binary_expression
+				(unary_expression (number_literal))
+				(number_literal)
+			)
+		)
+	))) (comment)
+	(local_assignment (identifier_list (identifier)) (expression_list (binary_expression
+		(binary_expression
+			(number_literal)
+			(unary_expression (number_literal))
+		)
+		(binary_expression (number_literal) (number_literal))
+	))) (comment)
+	(local_assignment (identifier_list (identifier)) (expression_list (binary_expression
+		(binary_expression
+			(number_literal)
+			(binary_expression
+				(unary_expression (number_literal))
+				(number_literal)
+			)
+		)
+		(unary_expression (number_literal))
+	))) (comment)
+)
+
+===================
+Logical Expressions
+===================
+local a = x > 1 and 1 or x -- ((x > 1) and 1) or x
+if x <= 5 or y == "test" and z ~= nil then
+	return x < 4 and x >= 2 and not a
+end
+---
+(chunk
+	(local_assignment (identifier_list (identifier)) (expression_list (binary_expression
+		(binary_expression
+			(binary_expression (variable (identifier)) (number_literal))
+			(number_literal)
+		)
+		(variable (identifier))
+	))) (comment)
+	(if_statement (binary_expression
+			(binary_expression (variable (identifier)) (number_literal))
+			(binary_expression
+				(binary_expression (variable (identifier)) (string_literal))
+				(binary_expression (variable (identifier)) (nil))
+			)
+		)
+		(return_statement (expression_list (binary_expression
+			(binary_expression
+				(binary_expression (variable (identifier)) (number_literal))
+				(binary_expression (variable (identifier)) (number_literal))
+			)
+			(unary_expression (variable (identifier)))
+		)))
+	)
+)
+
+==================
+Strings and Tables
+==================
+local a = "Table size: " .. #t
+print("String length: " .. #a .. "\nString content: '" .. a .. "'")
+---
+(chunk
+	(local_assignment (identifier_list (identifier)) (expression_list (binary_expression
+		(string_literal)
+		(unary_expression (variable (identifier)))
+	)))
+	(function_call (variable (identifier)) (expression_list (binary_expression
+		(string_literal)
+		(binary_expression
+			(unary_expression (variable (identifier)))
+			(binary_expression
+				(string_literal)
+				(binary_expression (variable (identifier)) (string_literal))
+			)
+		)
+	)))
+)

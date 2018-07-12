@@ -1,0 +1,37 @@
+========
+Comments
+========
+-
+--
+-- [[
+--[[]]
+--[[]
+---
+(chunk
+	(ERROR)
+	(comment)
+	(comment)
+	(comment)
+	(ERROR)
+)
+
+===========
+Long String
+===========
+local s = [[
+]]
+local s = [[]=]]
+local s = [=[]]=]
+local s = [==[[=[[[]]]=]]==]
+local s = [==[=[]=]==]
+local s = [[\
+]]
+---
+(chunk
+	(local_assignment (identifier_list (identifier)) (expression_list (string_literal)))
+	(local_assignment (identifier_list (identifier)) (expression_list (string_literal)))
+	(local_assignment (identifier_list (identifier)) (expression_list (string_literal)))
+	(local_assignment (identifier_list (identifier)) (expression_list (string_literal)))
+	(local_assignment (identifier_list (identifier)) (expression_list (string_literal)))
+	(local_assignment (identifier_list (identifier)) (expression_list (string_literal)))
+)
